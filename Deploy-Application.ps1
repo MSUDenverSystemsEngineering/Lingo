@@ -1,6 +1,11 @@
-<#
+﻿<#
 .SYNOPSIS
 	This script performs the installation or uninstallation of an application(s).
+	# LICENSE #
+	PowerShell App Deployment Toolkit - Provides a set of functions to perform common application deployment tasks on Windows.
+	Copyright (C) 2017 - Sean Lillis, Dan Cunningham, Muhammad Mashwani, Aman Motazedian.
+	This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	You should have received a copy of the GNU Lesser General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
 .DESCRIPTION
 	The script is provided as a template to perform an install or uninstall of an application(s).
 	The script either performs an "Install" deployment type or an "Uninstall" deployment type.
@@ -33,6 +38,8 @@
 	http://psappdeploytoolkit.com
 #>
 [CmdletBinding()]
+## Suppress PSScriptAnalyzer errors for not using declared variables during AppVeyor build
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "", Justification="Suppresses AppVeyor errors on informational variables below")]
 Param (
 	[Parameter(Mandatory=$false)]
 	[ValidateSet('Install','Uninstall')]
@@ -58,13 +65,13 @@ Try {
 	## Variables: Application
 	[string]$appVendor = 'Lindo Systems'
 	[string]$appName = 'Lingo'
-	[string]$appVersion = '16'
-	[string]$appArch = ''
+	[string]$appVersion = '18'
+	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
-	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '08/04/2017'
-	[string]$appScriptAuthor = 'Reuther'
+	[string]$appScriptVersion = '3.7.0.1'
+	[string]$appScriptDate = '07/15/2019'
+	[string]$appScriptAuthor = 'Truong Nguyen'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -78,8 +85,8 @@ Try {
 
 	## Variables: Script
 	[string]$deployAppScriptFriendlyName = 'Deploy Application'
-	[version]$deployAppScriptVersion = [version]'3.6.9'
-	[string]$deployAppScriptDate = '02/12/2017'
+	[version]$deployAppScriptVersion = [version]'3.7.0'
+	[string]$deployAppScriptDate = '02/13/2018'
 	[hashtable]$deployAppScriptParameters = $psBoundParameters
 
 	## Variables: Environment
@@ -111,8 +118,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Show Welcome Message, close applications if required, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'iexplore' -CheckDiskSpace -PersistPrompt
+		## Show Welcome Message, close Internet Explorer if needed, verify there is enough disk space to complete the install, and persist the prompt
+		Show-InstallationWelcome -CloseApps 'lingo64_18' -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -132,10 +139,8 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-				Copy-File -Path "$dirFiles\Lingo" -Destination "$envProgramFiles" -Recurse
-
-				Copy-File -Path "$dirSupportFiles\Lingo.lnk" -Destination "$envPublic\Desktop"
-				Copy-File -Path "$dirSupportFiles\Lingo.lnk" -Destination "$envProgramData\Microsoft\Windows\Start Menu\Programs"
+		Copy-File -Path "$dirFiles\LINGO64_18" -Destination "$envProgramFiles" -Recurse
+		Copy-File -Path "$dirSupportFiles\LINGO 18.0 x64.lnk" -Destination "$envProgramData\Microsoft\Windows\Start Menu\Programs"
 
 
 		##*===============================================
@@ -144,9 +149,17 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+		## ***To set an HKCU key for all users including default profile***
+		[scriptblock]$HKCURegistrySettings = {
+    Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\AutoUpdate' -Name 'Lingo64Enable' -Value '"00,00,00,00"' -Type Binary -ContinueOnError:$True
+		Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\Registration' -Name 'Metropolitan State University of Denver , kprewit' -Value '"N:"' -Type String -ContinueOnError:$True
+		}
+		Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
 
 		## Display a message at the end of the install
-		If (-not $useDefaultMsi) {}
+		If (-not $useDefaultMsi) {
+
+		}
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
@@ -155,8 +168,8 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Uninstallation'
 
-		## Show Welcome Message, close applications with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'iexplore' -CloseAppsCountdown 60
+		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
+		Show-InstallationWelcome -CloseApps 'lingo64_18' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -176,10 +189,8 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-				Remove-File -Path "$envProgramFiles\Lingo" -Recurse
-
-				Remove-File -Path "$envPublic\Desktop\Lingo.lnk"
-				Remove-File -Path "$envProgramData\Microsoft\Windows\Start Menu\Programs\Lingo.lnk"
+		Remove-File -Path "$envProgramFiles\LINGO64_18" -Recurse
+		Remove-File -Path "$envProgramData\Microsoft\Windows\Start Menu\Programs\LINGO 18.0 x64.lnk"
 
 
 		##*===============================================
@@ -188,7 +199,11 @@ Try {
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-
+		## ***To remove an HKCU key for all users including default profile***
+		[scriptblock]$HKCURegistrySettings = {
+    Remove-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.' -Recurse
+		}
+		Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
 
 	}
 
