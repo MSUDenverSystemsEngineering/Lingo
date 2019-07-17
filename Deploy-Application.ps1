@@ -139,8 +139,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		Copy-File -Path "$dirFiles\LINGO64_18" -Destination "$envProgramFiles" -Recurse
-		Copy-File -Path "$dirSupportFiles\LINGO 18.0 x64.lnk" -Destination "$envProgramData\Microsoft\Windows\Start Menu\Programs"
+		Execute-Process -Path "$dirFiles\LINGO-WINDOWS-64x86-18.0.exe" -Parameters "/S /v/qn"
 
 
 		##*===============================================
@@ -149,6 +148,7 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+		Remove-File -Path "C:\Users\Public\Desktop\LINGO 18.0 x64.lnk"
 		## ***To set an HKCU key for all users including default profile***
 		[scriptblock]$HKCURegistrySettings = {
     Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\AutoUpdate' -Name 'Lingo64Enable' -Value '"00,00,00,00"' -Type Binary -ContinueOnError:$True
