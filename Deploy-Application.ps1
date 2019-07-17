@@ -148,6 +148,7 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+		Copy-File -Path "$dirSupportFiles\lndlng18.lic" -Destination "C:\LINGO64_18"
 		Remove-File -Path "C:\Users\Public\Desktop\LINGO 18.0 x64.lnk"
 		## ***To set an HKCU key for all users including default profile***
 		[scriptblock]$HKCURegistrySettings = {
@@ -189,7 +190,7 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Remove-File -Path "$envProgramFiles\LINGO64_18" -Recurse
+		Remove-File -Path "C:\LINGO64_18" -Recurse
 		Remove-File -Path "$envProgramData\Microsoft\Windows\Start Menu\Programs\LINGO 18.0 x64.lnk"
 
 
