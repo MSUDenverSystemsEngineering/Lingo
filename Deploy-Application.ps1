@@ -152,8 +152,8 @@ Try {
 		Remove-File -Path "C:\Users\Public\Desktop\LINGO 18.0 x64.lnk"
 		## ***To set an HKCU key for all users including default profile***
 		[scriptblock]$HKCURegistrySettings = {
-    Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\AutoUpdate' -Name 'Lingo64Enable' -Value '"00,00,00,00"' -Type Binary -ContinueOnError:$True
-		Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\Registration' -Name 'Metropolitan State University of Denver , kprewit' -Value '"N:"' -Type String -ContinueOnError:$True
+    Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\AutoUpdate' -Name 'Lingo64Enable' -Value '"00,00,00,00"' -Type Binary -SID $UserProfile.SID -ContinueOnError:$True
+		Set-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.\Registration' -Name 'Metropolitan State University of Denver , kprewit' -Value '"N:"' -Type String -SID $UserProfile.SID -ContinueOnError:$True
 		}
 		Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
 
