@@ -63,14 +63,14 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = 'Lindo Systems'
+	[string]$appVendor = 'Lindo Systems Inc'
 	[string]$appName = 'Lingo'
 	[string]$appVersion = '18'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '3.7.0.1'
-	[string]$appScriptDate = '07/15/2019'
+	[string]$appScriptDate = '07/18/2019'
 	[string]$appScriptAuthor = 'Truong Nguyen'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
@@ -190,8 +190,10 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-		Remove-File -Path "C:\LINGO64_18" -Recurse
-		Remove-File -Path "$envProgramData\Microsoft\Windows\Start Menu\Programs\LINGO 18.0 x64.lnk"
+		Execute-MSI -Action Uninstall -Path '{C76711E3-5FEB-4A14-B19C-DF20A270D78A}'
+
+		#Remove-File -Path "C:\LINGO64_18" -Recurse
+		#Remove-File -Path "$envProgramData\Microsoft\Windows\Start Menu\Programs\LINGO 18.0 x64.lnk"
 
 
 		##*===============================================
@@ -201,10 +203,10 @@ Try {
 
 		## <Perform Post-Uninstallation tasks here>
 		## ***To remove an HKCU key for all users including default profile***
-		[scriptblock]$HKCURegistrySettings = {
-    Remove-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.' -Recurse
-		}
-		Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
+		#[scriptblock]$HKCURegistrySettings = {
+    #Remove-RegistryKey -Key 'HKEY_CURRENT_USER\Software\LINDO Systems, Inc.' -Recurse
+		#}
+		#Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
 
 	}
 
